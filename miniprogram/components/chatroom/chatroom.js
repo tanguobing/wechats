@@ -55,17 +55,42 @@ Component({
         const _ = db.command
 
         const { data: initList } = await db.collection(collection).where(this.mergeCommonCriteria()).orderBy('sendTimeTS', 'desc').get()
+        
+        console.log('init query chats',initList)
 
-        console.log('init query chats', initList)
+        var dataList = initList.map(item=>{
+          // console.log(item)
+          var num = {};
+          datas(item.sendTime)
+          function datas(item){
+            const date = new Date(item);
+            var h = date.getHours()+":";
+            var m = date.getMinutes();
+            num = h+m;
+            console.log("num:",num) 
+          }
+          return {
+            avatar: item.avatar,
+            groupId: item.groupId,
+            msgType: item.msgType,
+            nickName: item.nickName,
+            sendTime: item.sendTime,
+            sendTimeTS: num,
+            textContent: item.textContent,
+            _id: item._id,
+            _openid: item._openid
+          };
+        })
 
         this.setData({
-          chats: initList.reverse(),
+          chats: dataList.reverse(),
+          // chats: initList.reverse(),
           scrollTop: 10000,
         })
 
-        this.initWatch(initList.length ? {
-          sendTimeTS: _.gt(initList[initList.length - 1].sendTimeTS),
-        } : {})
+        // this.initWatch(initList.length ? {
+        //   sendTimeTS: _.gt(initList[initList.length - 1].sendTimeTS),
+        // } : {})
       }, '初始化失败')
     },
 

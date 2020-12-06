@@ -6,7 +6,7 @@ Page({
 
   data: {
     step: 4,
-    counterId: '',
+    counterId: 'd52d5a735faa702c006a39583295fff8',
     openid: '',
     count: null,
     queryResult: '',
@@ -50,12 +50,16 @@ Page({
   
 
   onQuery: function() {
-    const db = wx.cloud.database()
+    const db = wx.cloud.database();
+    const _ = db.command;
     // 查询当前用户所有的 counters
     db.collection('test').where({
-      price: gt(2)
-    }
-    ).get({
+      name: db.RegExp({
+        regexp:"Marry",
+        options:'i'
+      })
+      // price: _.lt(5)
+    }).get({
       success: res => {
         this.setData({
           queryResult: JSON.stringify(res.data, null, 2)
@@ -73,69 +77,70 @@ Page({
   },
 
   onCounterInc: function() {
-    // const db = wx.cloud.database()
-    // const newCount = this.data.count + 1
-    // db.collection('counters').doc(this.data.counterId).update({
-    //   data: {
-    //     count: newCount
-    //   },
-    //   success: res => {
-    //     this.setData({
-    //       count: newCount
-    //     })
-    //   },
-    //   fail: err => {
-    //     icon: 'none',
-    //     console.error('[数据库] [更新记录] 失败：', err)
-    //   }
-    // })
+    const db = wx.cloud.database()
+    const newCount = this.data.count + 1
+    db.collection('counters').doc("38597c165fa9528e008b18cc5e078570").update({
+      data: {
+        count: newCount
+      },
+      success: res => {
+        console.log(res)
+        this.setData({
+          count: newCount
+        })
+      },
+      fail: err => {
+        icon: 'none',
+        console.error('[数据库] [更新记录] 失败：', err)
+      }
+    })
   },
 
   onCounterDec: function() {
-    // const db = wx.cloud.database()
-    // const newCount = this.data.count - 1
-    // db.collection('counters').doc(this.data.counterId).update({
-    //   data: {
-    //     count: newCount
-    //   },
-    //   success: res => {
-    //     this.setData({
-    //       count: newCount
-    //     })
-    //   },
-    //   fail: err => {
-    //     icon: 'none',
-    //     console.error('[数据库] [更新记录] 失败：', err)
-    //   }
-    // })
+    const db = wx.cloud.database()
+    const newCount = this.data.count - 1
+    db.collection('counters').doc("38597c165fa9528e008b18cc5e078570").update({
+      data: {
+        count: newCount
+      },
+      success: res => {
+        this.setData({
+          count: newCount
+        })
+      },
+      fail: err => {
+        icon: 'none',
+        console.error('[数据库] [更新记录] 失败：', err)
+      }
+    })
   },
 
   onRemove: function() {
-    // if (this.data.counterId) {
-    //   const db = wx.cloud.database()
-    //   db.collection('counters').doc(this.data.counterId).remove({
-    //     success: res => {
-    //       wx.showToast({
-    //         title: '删除成功',
-    //       })
-    //       this.setData({
-    //         counterId: '',
-    //         count: null,
-    //       })
-    //     },
-    //     fail: err => {
-    //       wx.showToast({
-    //         icon: 'none',
-    //         title: '删除失败',
-    //       })
-    //       console.error('[数据库] [删除记录] 失败：', err)
-    //     }
-    //   })
-    // } else {
-    //   wx.showToast({
-    //     title: '无记录可删，请见创建一个记录',
-    //   })
-    // }
+    if (this.data.counterId) {
+      const db = wx.cloud.database()
+      db.collection('counters').doc(this.data.counterId).remove({
+        success: res => {
+          wx.showToast({
+            title: '删除成功',
+          })
+          this.setData({
+            counterId: '',
+            count: null,
+          })
+        },
+        fail: err => {
+          wx.showToast({
+            icon: 'none',
+            title: '删除失败',
+          })
+          console.error('[数据库] [删除记录] 失败：', err)
+        }
+      })
+    } else {
+      wx.showToast({
+        title: '无记录可删，请见创建一个记录',
+      })
+    }
   },
 
   nextStep: function () {
